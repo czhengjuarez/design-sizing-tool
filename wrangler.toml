@@ -1,6 +1,6 @@
 name = "design-sizing-tool"
+main = "worker.js"
 compatibility_date = "2024-11-21"
-pages_build_output_dir = "dist"
 
 [site]
 bucket = "./dist"
