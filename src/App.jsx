@@ -11,10 +11,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="text-center py-12 px-8 bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg">
-        <h1 className="text-4xl font-bold mb-2">UX Design Sizing Tool</h1>
-        <p className="text-lg opacity-95">Size your Jira tickets with confidence</p>
+    <div className="min-h-screen flex flex-col bg-cloudflare-gray-50">
+      <header className="text-center py-16 px-8 bg-white border-b-4 border-cloudflare-orange shadow-sm">
+        <h1 className="text-5xl font-bold mb-3 text-cloudflare-gray-900">Design Sizing Tool</h1>
+        <p className="text-xl text-cloudflare-gray-600">What would you like to size?</p>
       </header>
       
       <main className="flex-1 max-w-4xl w-full mx-auto px-8 py-8">
