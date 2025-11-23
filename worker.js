@@ -1,44 +1,26 @@
-import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
-import manifestJSON from '__STATIC_CONTENT_MANIFEST';
-
-const assetManifest = JSON.parse(manifestJSON);
-
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    
+    // Try to serve the requested asset
     try {
-      return await getAssetFromKV(
-        {
-          request,
-          waitUntil: ctx.waitUntil.bind(ctx),
-        },
-        {
-          ASSET_NAMESPACE: env.__STATIC_CONTENT,
-          ASSET_MANIFEST: assetManifest,
-        }
-      );
-    } catch (e) {
-      // If asset not found, return 404
-      if (e.status === 404) {
-        // For SPA routing, return index.html for non-asset routes
-        try {
-          const notFoundResponse = await getAssetFromKV(
-            {
-              request: new Request(`${new URL(request.url).origin}/index.html`, request),
-              waitUntil: ctx.waitUntil.bind(ctx),
-            },
-            {
-              ASSET_NAMESPACE: env.__STATIC_CONTENT,
-              ASSET_MANIFEST: assetManifest,
-            }
-          );
-          return new Response(notFoundResponse.body, {
-            ...notFoundResponse,
-            status: 200,
-          });
-        } catch (e) {}
+      const asset = await env.ASSETS.fetch(request);
+      
+      // If asset found, return it
+      if (asset.status !== 404) {
+        return asset;
       }
-
-      return new Response(e.message || e.toString(), { status: 500 });
+      
+      // For SPA routing: if asset not found and path doesn't have an extension,
+      // serve index.html (for client-side routing)
+      if (!url.pathname.includes('.')) {
+        const indexRequest = new Request(`${url.origin}/index.html`, request);
+        return await env.ASSETS.fetch(indexRequest);
+      }
+      
+      return asset;
+    } catch (e) {
+      return new Response(`Error: ${e.message}`, { status: 500 });
     }
   },
 };
